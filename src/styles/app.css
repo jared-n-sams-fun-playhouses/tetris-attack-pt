@@ -1,0 +1,44 @@
+/* Base Application Styles */
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+
+#main {
+    display: flex;
+    color: #666;
+    margin: 0 auto;
+    width: 50vw;
+}
+
+.player {
+    position: absolute;
+    border: 2px solid black;
+    margin: 0;
+    width: 80px;
+    height: 38px;
+    padding: 0;
+}
+
+#board {
+    display: flex;
+    position: relative;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.tile {
+    border: 2px solid black;
+    margin: 3px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+}
