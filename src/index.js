@@ -12,4 +12,4 @@ ReactDOM.render(<App />, rootEl);
 
 var t1 = performance.now();
 
-console.log("Call To Dosomething Took " + (t1 - t0) + " Milliseconds.");
+console.log("Call To render app t: " + (t1 - t0) + "ms");

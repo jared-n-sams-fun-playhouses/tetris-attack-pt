@@ -12,9 +12,11 @@ export default React.createClass({
             board:   this.buildBoard(this.props.columns, this.props.rows)
         };
     },
-    getPieceType: function() {
-        var random = '4';
-        return random;
+    getPieceType: function(blank) {
+        blank = blank || false;
+        var piece_type = ['👻', '😂', '🔥', '😺', '🌮'];
+        var index = Math.floor(Math.random() * ((4 - 0 + 1) + 0));
+        return (blank ? ' ' : piece_type[index]);
     },
     buildBoard: function(x, y) {
         var board = new Array();
@@ -22,7 +24,7 @@ export default React.createClass({
         for(var i = 0; i < y; i++)
             for(var j = 0; j < x; j++)
                 board.push({
-                    piece_type:id_num++,
+                    piece_type:this.getPieceType(),
                     pos_x:j,
                     pos_y:i
                 });
@@ -52,7 +54,7 @@ export default React.createClass({
 
         // debug performance
         var t1 = performance.now();
-        console.log('swapTiles t: ' + (t1- t0) + 'ms');
+        console.log('swapTiles t: ' + (t1 - t0) + 'ms');
 
         // debug
         console.log(this.state.player, x, y, tilesToSwap[1], tilesToSwap[0]);
@@ -65,11 +67,12 @@ export default React.createClass({
     },
     render: function () {
         var tiles = this.state.board.map( (tile, index) => {
-            return <Tile
+            return (<Tile
                         key={index}
                         piece_type={tile.piece_type}
                         pos_x={tile.pos_x}
                         pos_y={tile.pos_y} />
+                    );
         });
 
         return (
