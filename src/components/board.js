@@ -9,25 +9,30 @@ export default React.createClass({
             player:  this.props.player,
             columns: this.props.columns || 6 ,
             rows:    this.props.rows    || 12,
-            board:   this.buildBoard(this.props.columns, this.props.rows)
+            board:   this.buildBoard(this.props.columns, this.props.rows),
+            cursor: {
+                x:0,
+                y:0
+            }
         };
     },
-    getPieceType: function(blank) {
-        blank = blank || false;
-        var piece_type = ['👻', '😂', '🔥', '😺', '🌮'];
-        var index = Math.floor(Math.random() * ((4 - 0 + 1) + 0));
-        return (blank ? ' ' : piece_type[index]);
+    getPieceType: function(piece) {
+        return ['👻', '😂', '🔥', '😺', '🌮'][piece];
     },
     buildBoard: function(x, y) {
-        var board = new Array();
+        var size = x * y;
+        var board = new Array(size);
         var id_num = 0;
-        for(var i = 0; i < y; i++)
-            for(var j = 0; j < x; j++)
-                board.push({
-                    piece_type:this.getPieceType(),
+        for(var i = 0; i < y; i++) {
+            for(var j = 0; j < x; j++) {
+                board[id_num] = {
+                    piece_type:this.getPieceType(2),
                     pos_x:j,
                     pos_y:i
-                });
+                };
+                id_num++;
+            }
+        }
 
         return board;
     },
@@ -37,7 +42,7 @@ export default React.createClass({
 
         var tiles = this.state.board;
         var tilesToSwap = tiles.filter(function (tile) {
-            return (tile.pos_x == x || tile.pos_x == x + 1) && tile.pos_y == y && tile.piece_type !== '';
+            return (tile.pos_x == x || tile.pos_x == x + 1) && tile.pos_y == y && tile.piece_type;
         });
 
         if (tilesToSwap.length != 2)
@@ -62,16 +67,25 @@ export default React.createClass({
     raiseBoard: function() {
         console.log('TODO raiseBoard ' + this.state.player);
     },
-    moveCursor: function() {
-        console.log('TODO moveCursor ' + this.state.player);
+    moveCursor: function(x, y) {
+        this.setState({cursor: {x:x, y:y}});
     },
     render: function () {
         var tiles = this.state.board.map( (tile, index) => {
+            var x         = this.state.cursor.x;
+            var y         = this.state.cursor.y;
+            var setCursor = false;
+
+            if((tile.pos_x == x || tile.pos_x == x + 1) && tile.pos_y == y) {
+                setCursor = true;
+            }
+            
             return (<Tile
                         key={index}
                         piece_type={tile.piece_type}
                         pos_x={tile.pos_x}
-                        pos_y={tile.pos_y} />
+                        pos_y={tile.pos_y}
+                        cursor={setCursor} />
                     );
         });
 

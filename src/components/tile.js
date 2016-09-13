@@ -12,7 +12,7 @@ export default React.createClass({
         };
     },
     render: function () {
-        var class_name = classNames('tile');
+        var class_name = classNames('tile', {'cursor': this.props.cursor});
 
         return (
             <div

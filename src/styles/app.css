@@ -22,6 +22,10 @@ body {
     padding: 0;
 }
 
+.cursor {
+    background-color: purple;
+}
+
 #board {
     display: flex;
     position: relative;

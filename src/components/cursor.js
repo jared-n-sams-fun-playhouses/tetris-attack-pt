@@ -21,7 +21,7 @@ export default React.createClass({
             }
         };
     },
-    keyPress: function(event) {
+    keyDown: function(event) {
         console.log(event);
         var x = this.state.pos.x;
         var y = this.state.pos.y;
@@ -51,24 +51,21 @@ export default React.createClass({
         if(x < 0 || x >= this.state.columns - 1 || y < 0 || y >= this.state.rows)
             return;
 
+        this.props.move(x, y);
         this.setState({pos: {x: x, y: y}});
 
         // debug
         console.log(this.state.player, x, y);
     },
     componentDidMount: function() {
-        window.addEventListener('keypress', this.keyPress);
+        window.addEventListener('keydown', this.keyDown);
     },
     componentWillUnmount: function() {
-        window.removeEventListener('keypress', this.keyPress);
+        window.removeEventListener('keydown', this.keyDown);
     },
     render: function () {
-        var class_name = classNames({
-            'player': true,
-        });
-
         return (
-            <div id={this.state.player} className={class_name} data-x={this.state.pos.x} data-y={this.state.pos.y}></div>
+            <div id={this.state.player} data-x={this.state.pos.x} data-y={this.state.pos.y}></div>
         );
     }
 });
