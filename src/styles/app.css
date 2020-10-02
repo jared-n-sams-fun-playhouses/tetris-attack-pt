@@ -33,6 +33,10 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
+    /* min width to maintain 6 columns */
+    min-width:253px;
+    /* max width to maintain 6 columns */
+    max-width:285px;
 }
 .row {
     display: flex;

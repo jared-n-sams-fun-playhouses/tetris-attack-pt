@@ -13,7 +13,7 @@ export default React.createClass({
 		  		<Board
 					player="1"
 					columns={6}
-					rows={14} />
+					rows={12} />
 			</div>
 		);
   	}
