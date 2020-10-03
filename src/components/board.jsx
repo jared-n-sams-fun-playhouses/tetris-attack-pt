@@ -85,9 +85,9 @@ export default class Board extends React.Component {
     var tiles = this.state.board;
     var tilesToSwap = tiles.filter(function (tile) {
       return (
-        (tile.posX == x || tile.posX == x + 1) &&
-        tile.posY == y &&
-        tile.pieceType
+        (tile.posX == x || tile.posX == x + 1)
+        && tile.posY == y
+        && tile.pieceType
       );
     });
 
@@ -169,8 +169,8 @@ export default class Board extends React.Component {
   }
 
   render() {
-    const tileSize = {width:64, height: 64};
-    const boardSize = 0;
+    const tileSize = {width: 64, height: 64};
+    const boardWidth = `${(3 + 2 + tileSize.width + 2 + 3) * this.state.columns}px`;
 
     const tiles = this.state.board.map((tile, index) => {
       const x = this.state.cursor.x;
@@ -184,7 +184,7 @@ export default class Board extends React.Component {
       return (
         <Tile
           key={index}
-          piece_type={tile.pieceType}
+          pieceType={tile.pieceType}
           x={tile.posX}
           y={tile.posY}
           size={tileSize}
@@ -209,7 +209,7 @@ export default class Board extends React.Component {
           data-player={this.state.player}
           data-columns={this.state.columns}
           data-rows={this.state.rows}
-          size={boardSize}
+          style={{width: boardWidth}}
         >
           {tiles}
         </div>

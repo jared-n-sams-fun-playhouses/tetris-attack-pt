@@ -13,12 +13,12 @@ export default (props) => {
   return (
     <div
       className={class_name}
-      data-type={props.piece_type}
+      data-type={props.pieceType}
       data-x={props.x}
       data-y={props.y}
       style={size}
     >
-        {props.piece_type}
+      {props.pieceType}
     </div>
   );
 };

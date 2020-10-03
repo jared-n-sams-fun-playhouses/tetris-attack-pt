@@ -8,7 +8,8 @@ export default (props) => {
       <Board
         player="1"
         columns={6}
-        rows={12} />
+        rows={12}
+      />
     </div>
   );
 };
