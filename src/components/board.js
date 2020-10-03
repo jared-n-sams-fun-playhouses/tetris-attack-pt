@@ -129,6 +129,9 @@ export default class Board extends React.Component {
         // FIXME
         // there's a bug when matching pieces when the edge is the same,
         // it would consider 2 pieces next to each other a match
+        // 
+        // FIXME 2
+        // One matches 3 in a row
         for(let x = index-3; x < index; x++){
             newBoard.splice(x, 1, {piece_type:"[]", pos_x:board[x].pos_x, pos_y:board[x].pos_y});
         }
@@ -149,6 +152,7 @@ export default class Board extends React.Component {
   }
 
   raiseBoard() {
+    // FIXME, cursor need to stay on the last relative board/grid position
     const newRow = this.buildRow();
     const board = [...this.state.board, ...newRow];
     const firstRow = [0, 1, 2, 3, 4, 5];
