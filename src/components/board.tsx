@@ -4,8 +4,32 @@ import Cursor from "./cursor";
 import { randomInteger } from "../utils/utils";
 
 
-export default class Board extends React.Component {
-  constructor (props) {
+export type PieceType = "👻" | "😂" | "🔥" | "😺" | "🌮" | "[]"
+
+type Tile = {
+  posX:number;
+  posY:number;
+  pieceType:PieceType;
+}
+
+type Cursor = {
+  x:number;
+  y:number;
+}
+
+interface Props {
+  player:string;
+  columns:number;
+  rows:number
+}
+
+interface State extends Props {
+  board:Array<Tile>
+  cursor:Cursor
+}
+
+export default class Board extends React.Component<Props, State>{
+  constructor (props:Props) {
     super(props)
 
     this.state = {
@@ -24,11 +48,11 @@ export default class Board extends React.Component {
     this.setState({board: this.buildBoard(this.state.columns, this.state.rows)});
   }
 
-  getPieceType(piece) {
-    return ["👻", "😂", "🔥", "😺", "🌮"][piece];
+  getPieceType(piece:number) {
+    return ["👻", "😂", "🔥", "😺", "🌮"][piece] as PieceType;
   }
 
-  buildBoard(x, y) {
+  buildBoard(x:number, y:number) {
     const board = new Array(x * y);
     let id = 0;
 
@@ -63,7 +87,7 @@ export default class Board extends React.Component {
   }
 
   buildRow() {
-    let row;
+    let row:Array<Tile> = [];
     for (var j = 0; j < 6; j++) {
       console.log(row);
       row = [
@@ -78,7 +102,7 @@ export default class Board extends React.Component {
     return row;
   }
 
-  swapTiles(x, y) {
+  swapTiles(x:number, y:number) {
     // debug performance
     var t0 = performance.now();
 
@@ -114,7 +138,7 @@ export default class Board extends React.Component {
   searchForMatch() {
     const { board } = this.state;
     // search x
-    let pieceTrain = [];
+    let pieceTrain:Array<PieceType> = [];
     board.forEach((tile, index) => {
       if(index+1 % 6 === 0 ) {
         console.log("NEW ROW")
@@ -158,13 +182,13 @@ export default class Board extends React.Component {
     const board = [...this.state.board, ...newRow];
     const firstRow = [0, 1, 2, 3, 4, 5];
     while (firstRow.length) {
-      board.splice(firstRow.pop(), 1);
+      board.splice(firstRow.pop() as number, 1);
     }
 
     this.setState({board});
   }
 
-  moveCursor(cursor) {
+  moveCursor(cursor:Cursor) {
     this.setState({cursor});
   }
 
