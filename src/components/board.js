@@ -101,7 +101,7 @@ export default class Board extends React.Component {
     tilesToSwap[1].piece_type = tilesToSwap[0].piece_type;
     tilesToSwap[0].piece_type = tmp;
 
-    this.setState({ board: tiles });
+    this.setState({board: tiles});
 
     // debug performance
     var t1 = performance.now();
@@ -117,29 +117,29 @@ export default class Board extends React.Component {
     // search x
     let pieceTrain = [];
     board.forEach((tile, index) => {
-        if(index+1 % 6 === 0 ) {
-            console.log("NEW ROW")
-            pieceTrain = [tile.piece_type];
+      if(index+1 % 6 === 0 ) {
+        console.log("NEW ROW")
+        pieceTrain = [tile.piece_type];
+      }
+      if(tile.piece_type === "[]") return pieceTrain = [];
+      if(pieceTrain.length >= 3 && !pieceTrain.includes(tile.piece_type)){
+
+        const newBoard = [...board]
+
+        // FIXME
+        // there's a bug when matching pieces when the edge is the same,
+        // it would consider 2 pieces next to each other a match
+        for(let x = index-3; x < index; x++){
+            newBoard.splice(x, 1, {piece_type:"[]", pos_x:board[x].pos_x, pos_y:board[x].pos_y});
         }
-        if(tile.piece_type === "[]") return pieceTrain = [];
-        if(pieceTrain.length >= 3 && !pieceTrain.includes(tile.piece_type)){
 
-            const newBoard = [...board]
-
-            // FIXME
-            // there's a bug when matching pieces when the edge is the same,
-            // it would consider 2 pieces next to each other a match
-            for(let x = index-3; x < index; x++){
-                newBoard.splice(x, 1, {piece_type:"[]", pos_x:board[x].pos_x, pos_y:board[x].pos_y});
-            }
-
-            console.log(newBoard, board)
-            this.setState({board:newBoard})
-        } 
-        if(!pieceTrain.length) return pieceTrain = [tile.piece_type]
-        if(pieceTrain.includes(tile.piece_type)) return pieceTrain = [...pieceTrain, tile.piece_type]
-        console.log("nope", pieceTrain, tile)
-        return pieceTrain = [tile.piece_type];
+        console.log(newBoard, board)
+        this.setState({board:newBoard})
+      } 
+      if(!pieceTrain.length) return pieceTrain = [tile.piece_type]
+      if(pieceTrain.includes(tile.piece_type)) return pieceTrain = [...pieceTrain, tile.piece_type]
+      console.log("nope", pieceTrain, tile)
+      return pieceTrain = [tile.piece_type];
     });
 
     //TODO: search vertical matches
@@ -156,9 +156,7 @@ export default class Board extends React.Component {
       board.splice(firstRow.pop(), 1);
     }
 
-    this.setState({
-      board,
-    });
+    this.setState({board});
   }
 
   moveCursor(cursor) {
