@@ -29,37 +29,36 @@ export default class Board extends React.Component {
   }
 
   buildBoard(x, y) {
-    var size = x * y;
-    var board = new Array(size);
-    var id_num = 0;
+    const board = new Array(x * y);
+    let id = 0;
 
     // build empty upper slots
     for (var i = 0; i < 6; i++) {
       for (var j = 0; j < x; j++) {
-        board[id_num] = {
-          piece_type: `[]`,
-          pos_x: j,
-          pos_y: i,
+        board[id] = {
+          pieceType: `[]`,
+          posX: j,
+          posY: i,
         };
-        id_num++;
+        id++;
       }
     }
 
-    console.log("initial board", { board });
+    console.log("initial board", {board});
     // build actual blocks
     // FIXME
     // the board should be build with no matches
     for (var i = 6; i < y; i++) {
       for (var j = 0; j < x; j++) {
-        board[id_num] = {
-          piece_type: this.getPieceType(randomInteger(0, 4)),
-          pos_x: j,
-          pos_y: i,
+        board[id] = {
+          pieceType: this.getPieceType(randomInteger(0, 4)),
+          posX: j,
+          posY: i,
         };
-        id_num++;
+        id++;
       }
     }
-    console.log("final board", { board });
+    console.log("final board", {board});
     return board;
   }
 
@@ -70,9 +69,9 @@ export default class Board extends React.Component {
       row = [
         ...(row || []),
         {
-          piece_type: this.getPieceType(randomInteger(0, 4)),
-          pos_x: j,
-          pos_y: this.state.board[this.state.board.length - 1].pos_y + 1,
+          pieceType: this.getPieceType(randomInteger(0, 4)),
+          posX: j,
+          posY: this.state.board[this.state.board.length - 1].posY + 1,
         },
       ];
     }
@@ -86,9 +85,9 @@ export default class Board extends React.Component {
     var tiles = this.state.board;
     var tilesToSwap = tiles.filter(function (tile) {
       return (
-        (tile.pos_x == x || tile.pos_x == x + 1) &&
-        tile.pos_y == y &&
-        tile.piece_type
+        (tile.posX == x || tile.posX == x + 1) &&
+        tile.posY == y &&
+        tile.pieceType
       );
     });
 
@@ -97,9 +96,9 @@ export default class Board extends React.Component {
     // given what the MDN docs says about Array.prototype.filter() is incorrect,
     // it seems to pass a slice of the array it's filtering,
     // thus mutating the array that's being filtered
-    var tmp = tilesToSwap[1].piece_type;
-    tilesToSwap[1].piece_type = tilesToSwap[0].piece_type;
-    tilesToSwap[0].piece_type = tmp;
+    var tmp = tilesToSwap[1].pieceType;
+    tilesToSwap[1].pieceType = tilesToSwap[0].pieceType;
+    tilesToSwap[0].pieceType = tmp;
 
     this.setState({board: tiles});
 
@@ -119,30 +118,32 @@ export default class Board extends React.Component {
     board.forEach((tile, index) => {
       if(index+1 % 6 === 0 ) {
         console.log("NEW ROW")
-        pieceTrain = [tile.piece_type];
+        pieceTrain = [tile.pieceType];
       }
-      if(tile.piece_type === "[]") return pieceTrain = [];
-      if(pieceTrain.length >= 3 && !pieceTrain.includes(tile.piece_type)){
+      if(tile.pieceType === "[]") return pieceTrain = [];
+      if(pieceTrain.length >= 3 && !pieceTrain.includes(tile.pieceType)){
 
         const newBoard = [...board]
 
         // FIXME
         // there's a bug when matching pieces when the edge is the same,
-        // it would consider 2 pieces next to each other a match
+        // it would consider 2 pieces next to each other a match,
+        // UPDATE, actually it's due to the fact of the next row tile being the
+        // same
         // 
         // FIXME 2
-        // One matches 3 in a row
+        // Only matches 3 in a row, need to allow for 4 to 6 horizontal
         for(let x = index-3; x < index; x++){
-            newBoard.splice(x, 1, {piece_type:"[]", pos_x:board[x].pos_x, pos_y:board[x].pos_y});
+          newBoard.splice(x, 1, {pieceType:"[]", posX:board[x].posX, posY:board[x].posY});
         }
 
         console.log(newBoard, board)
-        this.setState({board:newBoard})
+        this.setState({board: newBoard})
       } 
-      if(!pieceTrain.length) return pieceTrain = [tile.piece_type]
-      if(pieceTrain.includes(tile.piece_type)) return pieceTrain = [...pieceTrain, tile.piece_type]
+      if(!pieceTrain.length) return pieceTrain = [tile.pieceType]
+      if(pieceTrain.includes(tile.pieceType)) return pieceTrain = [...pieceTrain, tile.pieceType]
       console.log("nope", pieceTrain, tile)
-      return pieceTrain = [tile.piece_type];
+      return pieceTrain = [tile.pieceType];
     });
 
     //TODO: search vertical matches
@@ -168,25 +169,25 @@ export default class Board extends React.Component {
   }
 
   render() {
-    const tile_size = {width:64, height: 64};
-    const board_size = 0;
+    const tileSize = {width:64, height: 64};
+    const boardSize = 0;
 
     const tiles = this.state.board.map((tile, index) => {
       const x = this.state.cursor.x;
       const y = this.state.cursor.y;
       let setCursor = false;
 
-      if ((tile.pos_x == x || tile.pos_x == x + 1) && tile.pos_y == y) {
+      if ((tile.posX == x || tile.posX == x + 1) && tile.posY == y) {
         setCursor = true;
       }
 
       return (
         <Tile
           key={index}
-          piece_type={tile.piece_type}
-          x={tile.pos_x}
-          y={tile.pos_y}
-          size={tile_size}
+          piece_type={tile.pieceType}
+          x={tile.posX}
+          y={tile.posY}
+          size={tileSize}
           cursor={setCursor}
         />
       );
@@ -208,7 +209,7 @@ export default class Board extends React.Component {
           data-player={this.state.player}
           data-columns={this.state.columns}
           data-rows={this.state.rows}
-          size={board_size}
+          size={boardSize}
         >
           {tiles}
         </div>
