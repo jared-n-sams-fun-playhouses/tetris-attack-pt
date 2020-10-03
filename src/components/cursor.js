@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 export default class Cursor extends React.Component {
     constructor(props) {
         super(props)
@@ -11,14 +12,6 @@ export default class Cursor extends React.Component {
                 x: 0,
                 y: 0
             },
-            controls: {
-                left:  'ArrowLeft',
-                up:    'ArrowUp',
-                right: 'ArrowRight',
-                down:  'ArrowDown',
-                raise: 'Shift',
-                swap:  ' '
-            }
         };
     }
 
@@ -27,26 +20,16 @@ export default class Cursor extends React.Component {
         var x = this.state.pos.x;
         var y = this.state.pos.y;
 
-        switch (event.key) {
-            case this.state.controls.left:
-                x--;
-                break;
-            case this.state.controls.up:
-                y--;
-                break;
-            case this.state.controls.right:
-                x++;
-                break;
-            case this.state.controls.down:
-                y++;
-                break;
-            case this.state.controls.raise:
-                this.props.raise();
-                break;
-            case this.state.controls.swap:
-                this.props.swap(x, y);
-                break;
-        }
+        const action = {
+            'ArrowLeft':  () => { x--; },
+            'ArrowUp':    () => { y--; },
+            'ArrowRight': () => { x++; },
+            'ArrowDown':  () => { y++; },
+            'Shift':      () => { this.props.raise(); },
+            ' ':          () => { this.props.swap(x, y); },
+        }[event.key];
+
+        action()
 
         // for x max comparison, need to account for the second cursor on the right, - 1
         if(x < 0 || x >= this.state.columns - 1 || y < 0 || y >= this.state.rows)
