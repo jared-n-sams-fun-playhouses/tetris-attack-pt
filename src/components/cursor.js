@@ -19,24 +19,28 @@ export default class Cursor extends React.Component {
         console.log(event);
         var x = this.state.pos.x;
         var y = this.state.pos.y;
+        var move = false;
 
         const action = {
-            'ArrowLeft':  () => { x--; },
-            'ArrowUp':    () => { y--; },
-            'ArrowRight': () => { x++; },
-            'ArrowDown':  () => { y++; },
+            'ArrowLeft':  () => { x--; move = true; },
+            'ArrowUp':    () => { y--; move = true; },
+            'ArrowRight': () => { x++; move = true; },
+            'ArrowDown':  () => { y++; move = true; },
             'Shift':      () => { this.props.raise(); },
             ' ':          () => { this.props.swap(x, y); },
         }[event.key];
 
         action()
 
-        // for x max comparison, need to account for the second cursor on the right, - 1
-        if(x < 0 || x >= this.state.columns - 1 || y < 0 || y >= this.state.rows)
-            return;
+        if(move) {
+            // for x max comparison, need to account for the second cursor on the right, - 1
+            if(x < 0 || x >= this.state.columns - 1 || y < 0 || y >= this.state.rows)
+                return;
 
-        this.props.move(x, y);
-        this.setState({pos: {x: x, y: y}});
+            var position = {x:x, y:y};
+            this.props.move(position);
+            this.setState({pos: position});
+        }
 
         // debug
         console.log(this.state.player, x, y);

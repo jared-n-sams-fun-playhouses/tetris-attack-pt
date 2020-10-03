@@ -3,6 +3,7 @@ import Tile from "./tile";
 import Cursor from "./cursor";
 import { randomInteger } from "../utils/utils";
 
+
 export default class Board extends React.Component {
   constructor (props) {
     super(props)
@@ -11,12 +12,16 @@ export default class Board extends React.Component {
       player: props.player,
       columns: props.columns || 6,
       rows: props.rows || 12,
-      board: this.buildBoard(props.columns, props.rows),
+      board: [],
       cursor: {
         x: 0,
         y: 0,
       },
     };
+  }
+
+  componentDidMount() {
+    this.setState({board: this.buildBoard(this.state.columns, this.state.rows)});
   }
 
   getPieceType(piece) {
@@ -156,15 +161,18 @@ export default class Board extends React.Component {
     });
   }
 
-  moveCursor(x, y) {
-    this.setState({ cursor: { x: x, y: y } });
+  moveCursor(cursor) {
+    this.setState({cursor});
   }
 
   render() {
-    var tiles = this.state.board.map((tile, index) => {
-      var x = this.state.cursor.x;
-      var y = this.state.cursor.y;
-      var setCursor = false;
+    const tile_size = {width:64, height: 64};
+    const board_size = 0;
+
+    const tiles = this.state.board.map((tile, index) => {
+      const x = this.state.cursor.x;
+      const y = this.state.cursor.y;
+      let setCursor = false;
 
       if ((tile.pos_x == x || tile.pos_x == x + 1) && tile.pos_y == y) {
         setCursor = true;
@@ -174,8 +182,9 @@ export default class Board extends React.Component {
         <Tile
           key={index}
           piece_type={tile.piece_type}
-          pos_x={tile.pos_x}
-          pos_y={tile.pos_y}
+          x={tile.pos_x}
+          y={tile.pos_y}
+          size={tile_size}
           cursor={setCursor}
         />
       );
@@ -189,7 +198,7 @@ export default class Board extends React.Component {
           rows={this.state.rows}
           move={this.moveCursor.bind(this)}
           swap={this.swapTiles.bind(this)}
-          raise={this.raiseBoard}
+          raise={this.raiseBoard.bind(this)}
         />
 
         <div
@@ -197,6 +206,7 @@ export default class Board extends React.Component {
           data-player={this.state.player}
           data-columns={this.state.columns}
           data-rows={this.state.rows}
+          size={board_size}
         >
           {tiles}
         </div>

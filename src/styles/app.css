@@ -33,20 +33,27 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    /* min width to maintain 6 columns */
-    min-width:253px;
-    /* max width to maintain 6 columns */
-    max-width:285px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
+
 .row {
     display: flex;
     justify-content: center;
     width: 100%;
 }
+
 .tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 2px solid black;
+    border-radius: 4px;
     margin: 3px;
-    width: 32px;
-    height: 32px;
     padding: 0;
+    font-size: 1.6rem;
 }
