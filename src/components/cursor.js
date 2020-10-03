@@ -1,11 +1,12 @@
 import React from 'react';
 
-export default React.createClass({
-    getInitialState: function () {
-        return {
-            player:  this.props.player,
-            columns: this.props.columns,
-            rows:    this.props.rows,
+export default class Cursor extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            player:  props.player,
+            columns: props.columns,
+            rows:    props.rows,
             pos: {
                 x: 0,
                 y: 0
@@ -19,8 +20,9 @@ export default React.createClass({
                 swap:  ' '
             }
         };
-    },
-    keyDown: function(event) {
+    }
+
+    keyDown(event) {
         console.log(event);
         var x = this.state.pos.x;
         var y = this.state.pos.y;
@@ -55,16 +57,19 @@ export default React.createClass({
 
         // debug
         console.log(this.state.player, x, y);
-    },
-    componentDidMount: function() {
-        window.addEventListener('keydown', this.keyDown);
-    },
-    componentWillUnmount: function() {
+    }
+
+    componentDidMount() {
+        window.addEventListener('keydown', this.keyDown.bind(this));
+    }
+
+    componentWillUnmount() {
         window.removeEventListener('keydown', this.keyDown);
-    },
-    render: function () {
+    }
+
+    render() {
         return (
             <div id={this.state.player} data-x={this.state.pos.x} data-y={this.state.pos.y}></div>
         );
     }
-});
+};

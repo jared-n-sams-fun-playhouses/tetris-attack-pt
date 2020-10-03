@@ -3,23 +3,27 @@ import Tile from "./tile";
 import Cursor from "./cursor";
 import { randomInteger } from "../utils/utils";
 
-export default React.createClass({
-  getInitialState: function () {
-    return {
-      player: this.props.player,
-      columns: this.props.columns || 6,
-      rows: this.props.rows || 12,
-      board: this.buildBoard(this.props.columns, this.props.rows),
+export default class Board extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      player: props.player,
+      columns: props.columns || 6,
+      rows: props.rows || 12,
+      board: this.buildBoard(props.columns, props.rows),
       cursor: {
         x: 0,
         y: 0,
       },
     };
-  },
-  getPieceType: function (piece) {
+  }
+
+  getPieceType(piece) {
     return ["👻", "😂", "🔥", "😺", "🌮"][piece];
-  },
-  buildBoard: function (x, y) {
+  }
+
+  buildBoard(x, y) {
     var size = x * y;
     var board = new Array(size);
     var id_num = 0;
@@ -38,6 +42,8 @@ export default React.createClass({
 
     console.log("initial board", { board });
     // build actual blocks
+    // FIXME
+    // the board should be build with no matches
     for (var i = 6; i < y; i++) {
       for (var j = 0; j < x; j++) {
         board[id_num] = {
@@ -50,8 +56,9 @@ export default React.createClass({
     }
     console.log("final board", { board });
     return board;
-  },
-  buildRow: function () {
+  }
+
+  buildRow() {
     let row;
     for (var j = 0; j < 6; j++) {
       console.log(row);
@@ -65,8 +72,9 @@ export default React.createClass({
       ];
     }
     return row;
-  },
-  swapTiles: function (x, y) {
+  }
+
+  swapTiles(x, y) {
     // debug performance
     var t0 = performance.now();
 
@@ -97,8 +105,9 @@ export default React.createClass({
     // debug
     // console.log(this.state.player, x, y, tilesToSwap[1], tilesToSwap[0]);
     this.searchForMatch();
-  },
-  searchForMatch: function () {
+  }
+
+  searchForMatch() {
     const { board } = this.state;
     // search x
     let pieceTrain = [];
@@ -110,7 +119,11 @@ export default React.createClass({
         if(tile.piece_type === "[]") return pieceTrain = [];
         if(pieceTrain.length >= 3 && !pieceTrain.includes(tile.piece_type)){
 
-            const newBoard = [...board] 
+            const newBoard = [...board]
+
+            // FIXME
+            // there's a bug when matching pieces when the edge is the same,
+            // it would consider 2 pieces next to each other a match
             for(let x = index-3; x < index; x++){
                 newBoard.splice(x, 1, {piece_type:"[]", pos_x:board[x].pos_x, pos_y:board[x].pos_y});
             }
@@ -128,9 +141,9 @@ export default React.createClass({
     board.forEach((tile) => {
     //   console.log(tile);
     });
-  },
+  }
 
-  raiseBoard: function () {
+  raiseBoard() {
     const newRow = this.buildRow();
     const board = [...this.state.board, ...newRow];
     const firstRow = [0, 1, 2, 3, 4, 5];
@@ -141,11 +154,13 @@ export default React.createClass({
     this.setState({
       board,
     });
-  },
-  moveCursor: function (x, y) {
+  }
+
+  moveCursor(x, y) {
     this.setState({ cursor: { x: x, y: y } });
-  },
-  render: function () {
+  }
+
+  render() {
     var tiles = this.state.board.map((tile, index) => {
       var x = this.state.cursor.x;
       var y = this.state.cursor.y;
@@ -172,8 +187,8 @@ export default React.createClass({
           player={this.state.player}
           columns={this.state.columns}
           rows={this.state.rows}
-          move={this.moveCursor}
-          swap={this.swapTiles}
+          move={this.moveCursor.bind(this)}
+          swap={this.swapTiles.bind(this)}
           raise={this.raiseBoard}
         />
 
@@ -187,5 +202,5 @@ export default React.createClass({
         </div>
       </div>
     );
-  },
-});
+  }
+};

@@ -1,17 +1,21 @@
-import React from 'react';
+import React, {Component} from 'react'
 import classNames from 'classnames';
 
-export default React.createClass({
-    getInitialState: function () {
-        return {
-            piece_type: this.props.piece_type,
+
+export default class Tile extends Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            piece_type: props.piece_type,
             position: {
-                x: this.props.pos_x,
-                y: this.props.pos_y
+                x: props.pos_x,
+                y: props.pos_y
             }
         };
-    },
-    render: function () {
+    }
+
+    render() {
         var class_name = classNames('tile', {'cursor': this.props.cursor});
 
         return (
@@ -24,4 +28,4 @@ export default React.createClass({
             </div>
         );
     }
-});
+};

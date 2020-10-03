@@ -1,20 +1,14 @@
-import React from 'react';
+import React from 'react'
 import Board from './board';
 
-export default React.createClass({
-	getInitialState: function () {
-		return {
-			number_of_players: this.props.number_of_players || 1
-		};
-	},
-  	render: function () {
-		return (
-		  	<div id="main">
-		  		<Board
-					player="1"
-					columns={6}
-					rows={12} />
-			</div>
-		);
-  	}
-});
+
+export default (props) => {
+	return (
+		<div id="main">
+			<Board
+				player="1"
+				columns={6}
+				rows={12} />
+		</div>
+	);
+};
