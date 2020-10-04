@@ -19,7 +19,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         include: path.join(__dirname, "src"),
         use: {
@@ -42,6 +42,13 @@ module.exports = {
                  }
             ],
               "@babel/preset-react",
+              [
+                "@babel/preset-typescript",
+                {
+                  isTSX: true,
+                  allExtensions: true,
+                },
+              ],
             ],
             plugins: [
               ["@babel/plugin-proposal-optional-chaining"],
@@ -57,7 +64,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
   devServer: {
     port: port,

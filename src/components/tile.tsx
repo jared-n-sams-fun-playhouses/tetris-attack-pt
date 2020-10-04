@@ -1,8 +1,21 @@
 import React from 'react'
 import classNames from 'classnames';
+import { PieceType } from './board';
 
+type BoardSize = {
+  width:number;
+  height:number;
+}
 
-export default (props) => {
+interface Props {
+  size:BoardSize;
+  cursor:boolean;
+  pieceType:PieceType;
+  x:number;
+  y:number;
+}
+
+export default (props:Props) => {
   const size = {
     width: props.size.width,
     height: props.size.height,

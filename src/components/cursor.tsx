@@ -1,13 +1,30 @@
 import React, { useState, useEffect } from 'react';
 
+type Position = {
+  x:number;
+  y:number;
+}
 
-export default (props) => {
+interface Props {
+  columns:number;
+  rows:number;
+  player:string;
+  move: (position:Position) => void;
+  raise:() => void;
+  swap:(x:number, y:number) => void;
+}
+
+type CursorEvent = "ArrowLeft" | "ArrowUp" | "ArrowRight" | "ArrowDown" | "Shift" | " "
+
+
+export default (props:Props) => {
   const [position, setPosition] = useState({x: 0, y: 0});
 
   useEffect(() => {
     // TODO, think about adding position state update here on component change
     // setPosition({x: props.x, y: props.y})
 
+    //TODO: sort out these keyDown events
     window.addEventListener('keydown', keyDown);
 
     return function cleanup() {
@@ -15,29 +32,29 @@ export default (props) => {
     };
   });
 
-  const keyDown = (event) => {
-    console.log(event);
+  const keyDown = (event: KeyboardEvent):void => {
+    console.log({ event });
     let x = position.x;
     let y = position.y;
     let move = false;
 
     const action = {
-      ArrowLeft:  () => { x--; move = true; },
-      ArrowUp:    () => { y--; move = true; },
+      ArrowLeft: () => { x--; move = true; },
+      ArrowUp: () => { y--; move = true; },
       ArrowRight: () => { x++; move = true; },
-      ArrowDown:  () => { y++; move = true; },
-      Shift:      () => { props.raise(); },
-      ' ':        () => { props.swap(x, y); },
-    }[event.key];
+      ArrowDown: () => { y++; move = true; },
+      Shift: () => { props.raise(); },
+      ' ': () => { props.swap(x, y); },
+    }[event.key as CursorEvent];
 
-    action()
+    action();
 
-    if(move) {
+    if (move) {
       // for x max comparison, need to account for the second cursor on the right, - 1
-      if(x < 0 || x >= props.columns - 1 || y < 0 || y >= props.rows)
+      if (x < 0 || x >= props.columns - 1 || y < 0 || y >= props.rows)
         return;
 
-      const position = {x:x, y:y};
+      const position = { x: x, y: y };
       props.move(position);
       setPosition(position);
     }

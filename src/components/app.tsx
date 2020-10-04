@@ -2,7 +2,7 @@ import React from 'react'
 import Board from './board';
 
 
-export default (props) => {
+export default () => {
   return (
     <div id="main">
       <Board

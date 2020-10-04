@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "allowJs": true,
+    // "noEmit": true,
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmitOnError": false,
+    "noEmit": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+  ]
+}
