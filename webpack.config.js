@@ -5,12 +5,12 @@ var host = process.env.IP || "127.0.0.1";
 
 module.exports = {
   devtool: "#inline-source-map",
-//   entry: [
-//     "normalize.css",
-//     "./src/styles/app.css",
-//     "eventsource-polyfill", // necessary for hot reloading with IE
-//     "./src/index",
-//   ],
+  //   entry: [
+  //     "normalize.css",
+  //     "./src/styles/app.css",
+  //     "eventsource-polyfill", // necessary for hot reloading with IE
+  //     "./src/index",
+  //   ],
   output: {
     path: __dirname,
     filename: "bundle.js",
@@ -28,19 +28,14 @@ module.exports = {
             babelrc: false,
             presets: [
               [
-                '@babel/env',
+                "@babel/env",
                 {
-                    "loose": true,
-                    "targets": {
-                      "browsers": [
-                        "> 0.1%",
-                        "last 3 versions",
-                        "ie 10",
-                        "ie 11"
-                      ]
-                    }
-                 }
-            ],
+                  loose: true,
+                  targets: {
+                    browsers: ["> 0.1%", "last 3 versions", "ie 10", "ie 11"],
+                  },
+                },
+              ],
               "@babel/preset-react",
               [
                 "@babel/preset-typescript",
@@ -53,18 +48,24 @@ module.exports = {
             plugins: [
               ["@babel/plugin-proposal-optional-chaining"],
               "react-hot-loader/babel",
+              [
+                "@babel/plugin-transform-runtime",
+                {
+                  regenerator: true,
+                },
+              ],
             ],
           },
         },
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ["style-loader", "css-loader"],
       },
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
   devServer: {
     port: port,
