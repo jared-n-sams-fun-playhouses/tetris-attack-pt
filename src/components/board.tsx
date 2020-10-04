@@ -3,34 +3,33 @@ import Tile from "./tile";
 import Cursor from "./cursor";
 import { randomInteger } from "../utils/utils";
 
-
-export type PieceType = "👻" | "😂" | "🔥" | "😺" | "🌮" | "[]"
+export type PieceType = "👻" | "😂" | "🔥" | "😺" | "🌮" | "[]";
 
 type Tile = {
-  posX:number;
-  posY:number;
-  pieceType:PieceType;
-}
+  posX: number;
+  posY: number;
+  pieceType: PieceType;
+};
 
 type Cursor = {
-  x:number;
-  y:number;
-}
+  x: number;
+  y: number;
+};
 
 interface Props {
-  player:string;
-  columns:number;
-  rows:number
+  player: string;
+  columns: number;
+  rows: number;
 }
 
 interface State extends Props {
-  board:Array<Tile>
-  cursor:Cursor
+  board: Array<Tile>;
+  cursor: Cursor;
 }
 
-export default class Board extends React.Component<Props, State>{
-  constructor (props:Props) {
-    super(props)
+export default class Board extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
 
     this.state = {
       player: props.player,
@@ -45,14 +44,16 @@ export default class Board extends React.Component<Props, State>{
   }
 
   componentDidMount() {
-    this.setState({board: this.buildBoard(this.state.columns, this.state.rows)});
+    this.setState({
+      board: this.buildBoard(this.state.columns, this.state.rows),
+    });
   }
 
-  getPieceType(piece:number) {
+  getPieceType(piece: number) {
     return ["👻", "😂", "🔥", "😺", "🌮"][piece] as PieceType;
   }
 
-  buildBoard(x:number, y:number) {
+  buildBoard(x: number, y: number) {
     const board = new Array(x * y);
     let id = 0;
 
@@ -68,7 +69,7 @@ export default class Board extends React.Component<Props, State>{
       }
     }
 
-    console.log("initial board", {board});
+    console.log("initial board", { board });
     // build actual blocks
     // FIXME
     // the board should be build with no matches
@@ -82,12 +83,12 @@ export default class Board extends React.Component<Props, State>{
         id++;
       }
     }
-    console.log("final board", {board});
+    console.log("final board", { board });
     return board;
   }
 
   buildRow() {
-    let row:Array<Tile> = [];
+    let row: Array<Tile> = [];
     for (var j = 0; j < 6; j++) {
       // console.log(row);
       row = [
@@ -102,16 +103,16 @@ export default class Board extends React.Component<Props, State>{
     return row;
   }
 
-  swapTiles(x:number, y:number) {
+  swapTiles(x: number, y: number) {
     // debug performance
     var t0 = performance.now();
 
     var tiles = this.state.board;
     var tilesToSwap = tiles.filter(function (tile) {
       return (
-        (tile.posX == x || tile.posX == x + 1)
-        && tile.posY == y
-        && tile.pieceType
+        (tile.posX == x || tile.posX == x + 1) &&
+        tile.posY == y &&
+        tile.pieceType
       );
     });
 
@@ -124,7 +125,7 @@ export default class Board extends React.Component<Props, State>{
     tilesToSwap[1].pieceType = tilesToSwap[0].pieceType;
     tilesToSwap[0].pieceType = tmp;
 
-    this.setState({board: tiles});
+    this.setState({ board: tiles });
 
     // debug performance
     var t1 = performance.now();
@@ -135,70 +136,146 @@ export default class Board extends React.Component<Props, State>{
     this.searchForMatch();
   }
 
-  doMatch(index:number){
+  doMatch(index: number, direction: string) {
     const { board } = this.state;
-    const newBoard = [...board]
+    const newBoard = [...board];
 
     // FIXME
     // there's a bug when matching pieces when the edge is the same,
     // it would consider 2 pieces next to each other a match,
     // UPDATE, actually it's due to the fact of the next row tile being the
     // same
-    // 
+    //
     // FIXME 2
     // Only matches 3 in a row, need to allow for 4 to 6 horizontal
-    for(let x = index-3; x < index; x++){
-      newBoard.splice(x, 1, {pieceType:"[]", posX:board[x].posX, posY:board[x].posY});
+
+    if (direction === "horizontal") {
+      for (let x = index - 3; x < index; x++) {
+        newBoard.splice(x, 1, {
+          pieceType: "[]",
+          posX: board[x].posX,
+          posY: board[x].posY,
+        });
+      }
+    } else if (direction === "vertical") {
+      for (let x = index - 13; x < index; x += 6) {
+        newBoard.splice(x, 1, {
+          pieceType: "[]",
+          posX: board[x].posX,
+          posY: board[x].posY,
+        });
+      }
     }
 
     // console.log(newBoard, board)
-    this.setState({board: newBoard})
+    this.setState({ board: newBoard });
     return [];
   }
 
-  addToTrain(pieceTrain:Array<PieceType>, pieceType:PieceType, index:number){
-    const newPieceTrain = [...pieceTrain, pieceType]
+  addToTrain(
+    pieceTrain: Array<PieceType>,
+    pieceType: PieceType,
+    index: number,
+    direction: string
+  ) {
+    const newPieceTrain = [...pieceTrain, pieceType];
 
-    if(newPieceTrain.length >= 3 ){
-      this.doMatch(index+1);
+    if (newPieceTrain.length >= 3) {
+      this.doMatch(index + 1, direction);
       return [];
     } else {
       return newPieceTrain;
     }
   }
 
-  searchForMatch() {
-    const { board } = this.state;
-    // search x
-    let pieceTrain:Array<PieceType> = [];
-    board.forEach((tile, index) => {
-      console.log({index}, index % 6, {pieceTrain}, tile.pieceType, pieceTrain.length >= 3, !pieceTrain.includes(tile.pieceType));
-      
-      if(index % 6 === 0 ) {
-        console.log("------------NEW ROW-------------")
-        return pieceTrain = tile.pieceType === "[]" ? [] : [tile.pieceType];
+  searchX(board: Array<Tile>) {
+    let pieceTrain: Array<PieceType> = [];
+    board.forEach((tile: Tile, index: number) => {
+      console.log(
+        { index },
+        index % 6,
+        { pieceTrain },
+        tile.pieceType,
+        pieceTrain.length >= 3,
+        !pieceTrain.includes(tile.pieceType)
+      );
+
+      if (index % 6 === 0) {
+        console.log("------------NEW ROW-------------");
+        return (pieceTrain = tile.pieceType === "[]" ? [] : [tile.pieceType]);
       }
-     
-      if(pieceTrain.includes(tile.pieceType)) {
-        return pieceTrain = this.addToTrain(pieceTrain, tile.pieceType, index);
+
+      if (pieceTrain.includes(tile.pieceType)) {
+        return (pieceTrain = this.addToTrain(
+          pieceTrain,
+          tile.pieceType,
+          index,
+          "horizontal"
+        ));
       }
 
       // match 3
-      if(pieceTrain.length >= 3 && !pieceTrain.includes(tile.pieceType)){
-        return pieceTrain = this.doMatch(index)
-      } 
+      if (pieceTrain.length >= 3 && !pieceTrain.includes(tile.pieceType)) {
+        return (pieceTrain = this.doMatch(index, "horizontal"));
+      }
 
-      if(tile.pieceType === "[]") return pieceTrain = [];
+      if (tile.pieceType === "[]") return (pieceTrain = []);
 
-      if(!pieceTrain.length) return pieceTrain = [tile.pieceType]
-      console.log("nope", pieceTrain, tile)
-      return pieceTrain = [tile.pieceType];
+      if (!pieceTrain.length) return (pieceTrain = [tile.pieceType]);
+      console.log("nope", pieceTrain, tile);
+      return (pieceTrain = [tile.pieceType]);
     });
+  }
 
-    //TODO: search vertical matches
-    board.forEach((tile) => {
-    //   console.log(tile);
-    });
+  searchY(board: Array<Tile>) {
+    let pieceTrain: Array<PieceType> = [];
+    for (let x = 0; x < 6; x++) {
+      for (let y = 0; y < board.length; y += 6) {
+        const tile = board[y + x];
+        console.log(tile, y, pieceTrain);
+        if (y % board.length === 0) {
+          console.log("------------NEW COLUMN-------------");
+          pieceTrain = board[y + x].pieceType === "[]" ? [] : [tile.pieceType];
+          continue;
+        }
+
+        if (pieceTrain.includes(tile.pieceType)) {
+          pieceTrain = this.addToTrain(
+            pieceTrain,
+            tile.pieceType,
+            y + x,
+            "vertical"
+          );
+          continue;
+        }
+
+        // match 3
+        if (pieceTrain.length >= 3 && !pieceTrain.includes(tile.pieceType)) {
+          pieceTrain = this.doMatch(y + x, "vertical");
+          continue;
+        }
+
+        if (tile.pieceType === "[]") {
+          pieceTrain = [];
+          continue;
+        }
+
+        if (!pieceTrain.length) {
+          pieceTrain = [tile.pieceType];
+          continue;
+        }
+        console.log("nope", pieceTrain, tile);
+        pieceTrain = [tile.pieceType];
+      }
+    }
+  }
+
+  searchForMatch() {
+    const { board } = this.state;
+    // search x
+    this.searchX(board);
+    //search y
+    this.searchY(board);
   }
 
   raiseBoard() {
@@ -210,16 +287,18 @@ export default class Board extends React.Component<Props, State>{
       board.splice(firstRow.pop() as number, 1);
     }
 
-    this.setState({board});
+    this.setState({ board });
   }
 
-  moveCursor(cursor:Cursor) {
-    this.setState({cursor});
+  moveCursor(cursor: Cursor) {
+    this.setState({ cursor });
   }
 
   render() {
-    const tileSize = {width: 64, height: 64};
-    const boardWidth = `${(3 + 2 + tileSize.width + 2 + 3) * this.state.columns}px`;
+    const tileSize = { width: 64, height: 64 };
+    const boardWidth = `${
+      (3 + 2 + tileSize.width + 2 + 3) * this.state.columns
+    }px`;
 
     const tiles = this.state.board.map((tile, index) => {
       const x = this.state.cursor.x;
@@ -258,11 +337,11 @@ export default class Board extends React.Component<Props, State>{
           data-player={this.state.player}
           data-columns={this.state.columns}
           data-rows={this.state.rows}
-          style={{width: boardWidth}}
+          style={{ width: boardWidth }}
         >
           {tiles}
         </div>
       </div>
     );
   }
-};
+}
