@@ -25,6 +25,7 @@ interface Props {
 interface State extends Props {
   board: Array<Tile>;
   cursor: Cursor;
+  combo:number;
 }
 
 export default class Board extends React.Component<Props, State> {
@@ -36,6 +37,7 @@ export default class Board extends React.Component<Props, State> {
       columns: props.columns || 6,
       rows: props.rows || 12,
       board: [],
+      combo:0,
       cursor: {
         x: 0,
         y: 0,
@@ -168,7 +170,7 @@ export default class Board extends React.Component<Props, State> {
     }
 
     // console.log(newBoard, board)
-    this.setState({ board: newBoard });
+    this.setState({ board: newBoard, combo:this.state.combo + 3 });
     return [];
   }
 
@@ -270,12 +272,22 @@ export default class Board extends React.Component<Props, State> {
     }
   }
 
+  applyCombo(){
+    // send blocks to other side and/or score multiplier
+    console.log("APPLYING COMBO:", this.state.combo)
+    this.setState({combo:0})
+  }
+
   searchForMatch() {
     const { board } = this.state;
+
     // search x
     this.searchX(board);
+    
     //search y
     this.searchY(board);
+
+    this.applyCombo();
   }
 
   raiseBoard() {
