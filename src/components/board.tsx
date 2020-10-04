@@ -142,11 +142,6 @@ export default class Board extends React.Component<Props, State> {
     const { board } = this.state;
     const newBoard = [...board];
 
-    // FIXME
-    // there's a bug when matching pieces when the edge is the same,
-    // it would consider 2 pieces next to each other a match,
-    // UPDATE, actually it's due to the fact of the next row tile being the
-    // same
     //
     // FIXME 2
     // Only matches 3 in a row, need to allow for 4 to 6 horizontal
