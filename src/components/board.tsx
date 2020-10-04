@@ -411,8 +411,8 @@ export default class Board extends React.Component<Props, State> {
         >
           {tiles}
         </div>
-        <p>Combo Count: {Math.floor(this.state.combo / 3)}</p>
-        <p>Blocks Cleared: {this.state.combo}</p>
+        <p style={{fontSize:"30px"}}>Combo Count: {Math.floor(this.state.combo / 3)}</p>
+        <p style={{fontSize:"30px"}}>Blocks Cleared: {this.state.combo}</p>
       </div>
     );
   }
