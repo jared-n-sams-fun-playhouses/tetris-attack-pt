@@ -25,7 +25,9 @@ interface Props {
 interface State extends Props {
   board: Array<Tile>;
   cursor: Cursor;
-  combo:number;
+  combo: number;
+  comboCount: number;
+  paused: boolean;
 }
 
 export default class Board extends React.Component<Props, State> {
@@ -37,7 +39,9 @@ export default class Board extends React.Component<Props, State> {
       columns: props.columns || 6,
       rows: props.rows || 12,
       board: [],
-      combo:0,
+      combo: 0,
+      comboCount: 0,
+      paused: false,
       cursor: {
         x: 0,
         y: 0,
@@ -135,7 +139,10 @@ export default class Board extends React.Component<Props, State> {
 
     // debug
     // console.log(this.state.player, x, y, tilesToSwap[1], tilesToSwap[0]);
-    this.searchForMatch();
+    if (!this.state.paused) this.searchForMatch();
+    if (!this.state.comboCount) {
+      this.dropPieces(this.state.paused ? 2000 : 500);
+    }
   }
 
   doMatch(index: number, direction: string) {
@@ -165,7 +172,11 @@ export default class Board extends React.Component<Props, State> {
     }
 
     // console.log(newBoard, board)
-    this.setState({ board: newBoard, combo:this.state.combo + 3 });
+    this.setState({
+      board: newBoard,
+      combo: this.state.combo + 3,
+      comboCount: this.state.comboCount + 1,
+    });
     return [];
   }
 
@@ -185,20 +196,21 @@ export default class Board extends React.Component<Props, State> {
     }
   }
 
-  searchX(board: Array<Tile>) {
+  searchX() {
+    const { board } = this.state;
     let pieceTrain: Array<PieceType> = [];
     board.forEach((tile: Tile, index: number) => {
-      console.log(
-        { index },
-        index % 6,
-        { pieceTrain },
-        tile.pieceType,
-        pieceTrain.length >= 3,
-        !pieceTrain.includes(tile.pieceType)
-      );
+      // console.log(
+      //   { index },
+      //   index % 6,
+      //   { pieceTrain },
+      //   tile.pieceType,
+      //   pieceTrain.length >= 3,
+      //   !pieceTrain.includes(tile.pieceType)
+      // );
 
       if (index % 6 === 0) {
-        console.log("------------NEW ROW-------------");
+        // console.log("------------NEW ROW-------------");
         return (pieceTrain = tile.pieceType === "[]" ? [] : [tile.pieceType]);
       }
 
@@ -219,19 +231,20 @@ export default class Board extends React.Component<Props, State> {
       if (tile.pieceType === "[]") return (pieceTrain = []);
 
       if (!pieceTrain.length) return (pieceTrain = [tile.pieceType]);
-      console.log("nope", pieceTrain, tile);
+      // console.log("nope", pieceTrain, tile);
       return (pieceTrain = [tile.pieceType]);
     });
   }
 
-  searchY(board: Array<Tile>) {
+  searchY() {
+    const { board } = this.state;
     let pieceTrain: Array<PieceType> = [];
     for (let x = 0; x < 6; x++) {
       for (let y = 0; y < board.length; y += 6) {
         const tile = board[y + x];
-        console.log(tile, y, pieceTrain);
+        // console.log(tile, y, pieceTrain);
         if (y % board.length === 0) {
-          console.log("------------NEW COLUMN-------------");
+          // console.log("------------NEW COLUMN-------------");
           pieceTrain = board[y + x].pieceType === "[]" ? [] : [tile.pieceType];
           continue;
         }
@@ -261,28 +274,80 @@ export default class Board extends React.Component<Props, State> {
           pieceTrain = [tile.pieceType];
           continue;
         }
-        console.log("nope", pieceTrain, tile);
+        // console.log("nope", pieceTrain, tile);
         pieceTrain = [tile.pieceType];
       }
     }
   }
 
-  applyCombo(){
+  applyCombo() {
     // send blocks to other side and/or score multiplier
-    console.log("APPLYING COMBO:", this.state.combo)
-    this.setState({combo:0})
+    console.log("APPLYING COMBO:", `x${Math.floor(this.state.combo / 3)}`);
   }
 
   searchForMatch() {
-    const { board } = this.state;
-
+    this.setState({ comboCount: 0 });
     // search x
-    this.searchX(board);
-    
+    this.searchX();
+
     //search y
-    this.searchY(board);
+    this.searchY();
 
     this.applyCombo();
+    if (this.state.comboCount) {
+      this.dropPieces(2000)
+    } else {
+      this.setState({combo: 0});
+    }
+  }
+
+  async dropPieces(wait: number) {
+    // 2 second timer before drop
+    console.log("wait for it..");
+    this.setState({ paused: true });
+    await new Promise((resolve) => setTimeout(resolve, wait));
+
+    const { board } = this.state;
+    let newBoard = [...board];
+
+    // traverse vertically to find where blocks should fall
+    for (let x = 0; x < 6; x++) {
+      let column: Array<Tile> = [];
+      for (let y = 0; y < board.length; y += 6) {
+        column = [...column, board[x + y]];
+        if (column.length === 12) {
+
+          // sort tiles vertically
+          const newColumn = column.reduce((prev, tile) => {
+            if (tile.pieceType === "[]") return [tile, ...prev];
+            return [...prev, tile];
+          }, [] as Array<Tile>);
+
+          console.log("new column", newColumn);
+
+          // replace with posY
+          newColumn.forEach((tile, index) => {
+            const boardIndex = newBoard.indexOf(tile);
+            console.log("board index", boardIndex);
+            newBoard[boardIndex] = { ...tile, posY: index };
+            console.log("updated tile", newBoard[boardIndex]);
+          });
+        }
+      }
+    }
+
+    // sort based on new posY's set above
+    const sortedBoard = newBoard.sort((a, b) => {
+      console.log(a.posY, b.posY);
+      return a.posY - b.posY || a.posX - b.posX;
+    });
+
+    console.log(sortedBoard);
+    this.setState({ board: sortedBoard, paused: false });
+
+    // continue combo loop
+    this.searchForMatch();
+    console.log("go!");
   }
 
   raiseBoard() {
@@ -348,6 +413,7 @@ export default class Board extends React.Component<Props, State> {
         >
           {tiles}
         </div>
+        <p>Combo Count: {Math.floor(this.state.combo / 3)}</p>
       </div>
     );
   }
