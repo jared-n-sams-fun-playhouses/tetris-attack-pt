@@ -96,7 +96,6 @@ export default class Board extends React.Component<Props, State> {
   buildRow() {
     let row: Array<Tile> = [];
     for (var j = 0; j < 6; j++) {
-      // console.log(row);
       row = [
         ...(row || []),
         {
@@ -344,7 +343,6 @@ export default class Board extends React.Component<Props, State> {
 
     console.log(sortedBoard);
     this.setState({ board: sortedBoard, paused: false });
-
     // continue combo loop
     this.searchForMatch();
     console.log("go!");
@@ -414,6 +412,7 @@ export default class Board extends React.Component<Props, State> {
           {tiles}
         </div>
         <p>Combo Count: {Math.floor(this.state.combo / 3)}</p>
+        <p>Blocks Cleared: {this.state.combo}</p>
       </div>
     );
   }
