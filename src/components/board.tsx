@@ -89,7 +89,7 @@ export default class Board extends React.Component<Props, State>{
   buildRow() {
     let row:Array<Tile> = [];
     for (var j = 0; j < 6; j++) {
-      console.log(row);
+      // console.log(row);
       row = [
         ...(row || []),
         {
@@ -135,37 +135,62 @@ export default class Board extends React.Component<Props, State>{
     this.searchForMatch();
   }
 
+  doMatch(index:number){
+    const { board } = this.state;
+    const newBoard = [...board]
+
+    // FIXME
+    // there's a bug when matching pieces when the edge is the same,
+    // it would consider 2 pieces next to each other a match,
+    // UPDATE, actually it's due to the fact of the next row tile being the
+    // same
+    // 
+    // FIXME 2
+    // Only matches 3 in a row, need to allow for 4 to 6 horizontal
+    for(let x = index-3; x < index; x++){
+      newBoard.splice(x, 1, {pieceType:"[]", posX:board[x].posX, posY:board[x].posY});
+    }
+
+    // console.log(newBoard, board)
+    this.setState({board: newBoard})
+    return [];
+  }
+
+  addToTrain(pieceTrain:Array<PieceType>, pieceType:PieceType, index:number){
+    const newPieceTrain = [...pieceTrain, pieceType]
+
+    if(newPieceTrain.length >= 3 ){
+      this.doMatch(index+1);
+      return [];
+    } else {
+      return newPieceTrain;
+    }
+  }
+
   searchForMatch() {
     const { board } = this.state;
     // search x
     let pieceTrain:Array<PieceType> = [];
     board.forEach((tile, index) => {
-      if(index+1 % 6 === 0 ) {
-        console.log("NEW ROW")
-        pieceTrain = [tile.pieceType];
+      console.log({index}, index % 6, {pieceTrain}, tile.pieceType, pieceTrain.length >= 3, !pieceTrain.includes(tile.pieceType));
+      
+      if(index % 6 === 0 ) {
+        console.log("------------NEW ROW-------------")
+        return pieceTrain = tile.pieceType === "[]" ? [] : [tile.pieceType];
       }
-      if(tile.pieceType === "[]") return pieceTrain = [];
+     
+      if(pieceTrain.includes(tile.pieceType)) {
+        return pieceTrain = this.addToTrain(pieceTrain, tile.pieceType, index);
+      }
+
+      // match 3
       if(pieceTrain.length >= 3 && !pieceTrain.includes(tile.pieceType)){
-
-        const newBoard = [...board]
-
-        // FIXME
-        // there's a bug when matching pieces when the edge is the same,
-        // it would consider 2 pieces next to each other a match,
-        // UPDATE, actually it's due to the fact of the next row tile being the
-        // same
-        // 
-        // FIXME 2
-        // Only matches 3 in a row, need to allow for 4 to 6 horizontal
-        for(let x = index-3; x < index; x++){
-          newBoard.splice(x, 1, {pieceType:"[]", posX:board[x].posX, posY:board[x].posY});
-        }
-
-        console.log(newBoard, board)
-        this.setState({board: newBoard})
+        return pieceTrain = this.doMatch(index)
       } 
+
+      if(tile.pieceType === "[]") return pieceTrain = [];
+
       if(!pieceTrain.length) return pieceTrain = [tile.pieceType]
-      if(pieceTrain.includes(tile.pieceType)) return pieceTrain = [...pieceTrain, tile.pieceType]
       console.log("nope", pieceTrain, tile)
       return pieceTrain = [tile.pieceType];
     });
