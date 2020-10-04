@@ -14,9 +14,8 @@ interface Props {
   swap:(x:number, y:number) => void;
 }
 
-interface CursorEvent extends React.KeyboardEvent<HTMLDivElement> {
-  key:"ArrowLeft" | "ArrowUp" | "ArrowRight" | "ArrowDown" | "Shift" | " "
-}
+type CursorEvent = "ArrowLeft" | "ArrowUp" | "ArrowRight" | "ArrowDown" | "Shift" | " "
+
 
 export default (props:Props) => {
   const [position, setPosition] = useState({x: 0, y: 0});
@@ -26,16 +25,14 @@ export default (props:Props) => {
     // setPosition({x: props.x, y: props.y})
 
     //TODO: sort out these keyDown events
-    //@ts-ignore
     window.addEventListener('keydown', keyDown);
 
     return function cleanup() {
-          //@ts-ignore
       window.removeEventListener('keydown', keyDown);
     };
   });
 
-  function keyDown(event: CursorEvent)  {
+  const keyDown = (event: KeyboardEvent):void => {
     console.log({ event });
     let x = position.x;
     let y = position.y;
@@ -48,7 +45,7 @@ export default (props:Props) => {
       ArrowDown: () => { y++; move = true; },
       Shift: () => { props.raise(); },
       ' ': () => { props.swap(x, y); },
-    }[event.key];
+    }[event.key as CursorEvent];
 
     action();
 
