@@ -238,8 +238,8 @@ export default class Board extends React.Component<Props, State> {
   searchY() {
     const { board } = this.state;
     let pieceTrain: Array<PieceType> = [];
-    for (let x = 0; x < 6; x++) {
-      for (let y = 0; y < board.length; y += 6) {
+    for (let x = 0; x < this.props.columns; x++) {
+      for (let y = 0; y < board.length; y += this.props.columns) {
         const tile = board[y + x];
         // console.log(tile, y, pieceTrain);
         if (y % board.length === 0) {
