@@ -33,7 +33,6 @@ export default (props:Props) => {
   });
 
   const keyDown = (event: KeyboardEvent):void => {
-    console.log({ event });
     let x = position.x;
     let y = position.y;
     let move = false;
