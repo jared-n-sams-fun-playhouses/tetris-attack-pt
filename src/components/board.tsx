@@ -310,9 +310,9 @@ export default class Board extends React.Component<Props, State> {
     let newBoard = [...board];
 
     // traverse vertically to find where blocks should fall
-    for (let x = 0; x < 6; x++) {
+    for (let x = 0; x < this.props.columns; x++) {
       let column: Array<Tile> = [];
-      for (let y = 0; y < board.length; y += 6) {
+      for (let y = 0; y < board.length; y += this.props.columns) {
         column = [...column, board[x + y]];
         if (column.length === 12) {
 
